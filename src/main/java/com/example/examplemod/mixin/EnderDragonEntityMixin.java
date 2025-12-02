@@ -1,5 +1,6 @@
 package com.example.examplemod.mixin;
 
+import com.example.examplemod.ExampleMod;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,13 +19,13 @@ public abstract class EnderDragonEntityMixin {
     @Unique
     private boolean examplemod$loggedWaterOverride;
 
-    public boolean isPushedByWater() {
-        if (!examplemod$loggedWaterOverride) {
-            MIXIN_LOGGER.info("EnderDragonEntity mixin override in effect: isPushedByWater -> false");
-            examplemod$loggedWaterOverride = true;
-        }
-        return false;
-    }
+    // public boolean isPushedByWater() {
+    //     if (!examplemod$loggedWaterOverride) {
+    //         MIXIN_LOGGER.info("EnderDragonEntity mixin override in effect: isPushedByWater -> false");
+    //         examplemod$loggedWaterOverride = true;
+    //     }
+    //     return false;
+    // }
 
     @Inject(method = "livingTick()V", at = @At("RETURN"))
     private void examplemod$logInitialTick(CallbackInfo ci) {
@@ -32,6 +33,8 @@ public abstract class EnderDragonEntityMixin {
             MIXIN_LOGGER.info("EnderDragonEntity mixin is active (livingTick reached).");
             examplemod$loggedTick = true;
         }
+        EnderDragonEntity dragon = (EnderDragonEntity)(Object) this;
+        ExampleMod.DRAGON_LOGGER.logPosition(dragon.world, dragon);
     }
 }
 

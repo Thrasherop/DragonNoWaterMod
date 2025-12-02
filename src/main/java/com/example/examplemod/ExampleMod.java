@@ -1,7 +1,11 @@
 package com.example.examplemod;
 
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -32,6 +36,7 @@ public class ExampleMod
 {
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
+    public static final DragonLocationLogger DRAGON_LOGGER = new DragonLocationLogger();
 
     static {
         try {
@@ -89,6 +94,37 @@ public class ExampleMod
     public void onServerStarting(FMLServerStartingEvent event) {
         // do something when the server starts
         LOGGER.info("HELLO from server starting");
+        CommandDispatcher<CommandSource> dispatcher = event.getServer().getCommandManager().getDispatcher();
+        dispatcher.register(Commands.literal("dragonlog")
+                .requires(source -> source.hasPermissionLevel(2))
+                .then(Commands.literal("start").executes(context -> {
+                    DRAGON_LOGGER.startLogging();
+                    context.getSource().sendFeedback(new StringTextComponent(
+                            "Ender dragon location logging enabled."), true);
+                    return Command.SINGLE_SUCCESS;
+                }))
+                .then(Commands.literal("stop").executes(context -> {
+                    DRAGON_LOGGER.stopLogging();
+                    context.getSource().sendFeedback(new StringTextComponent(
+                            "Ender dragon location logging disabled."), true);
+                    return Command.SINGLE_SUCCESS;
+                }))
+                .then(Commands.literal("get").executes(context -> sendLogFilePath(context.getSource())))
+                .then(Commands.literal("status").executes(context -> reportLoggerStatus(context.getSource())))
+                .executes(context -> reportLoggerStatus(context.getSource())));
+    }
+
+    private static int reportLoggerStatus(CommandSource source) {
+        boolean enabled = DRAGON_LOGGER.isLoggingEnabled();
+        source.sendFeedback(new StringTextComponent(
+                "Ender dragon location logging is " + (enabled ? "ON" : "OFF") + "."), true);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int sendLogFilePath(CommandSource source) {
+        String path = DRAGON_LOGGER.getLogFile().toAbsolutePath().toString();
+        source.sendFeedback(new StringTextComponent("Dragon log file -> " + path), true);
+        return Command.SINGLE_SUCCESS;
     }
 
     @SubscribeEvent
