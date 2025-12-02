@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Forge Client (runClient.ps1)",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "cd \"${workspaceFolder}\"; powershell -NoProfile -ExecutionPolicy Bypass -File .\\runClient.ps1"
+        }
+    ]
+}
+

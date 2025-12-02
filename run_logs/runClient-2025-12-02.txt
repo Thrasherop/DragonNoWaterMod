@@ -1,0 +1,20 @@
+[02:49:26] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRYDUMP]: Registry Name: minecraft:tree_decorator_type
+[02:49:26] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRYDUMP]: Registry Name: minecraft:dataserializers
+[02:49:26] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
+[02:49:26] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
+[02:49:26] [Server thread/INFO] [minecraft/IntegratedServer]: Starting integrated minecraft server version 1.16.1
+[02:49:26] [Server thread/INFO] [minecraft/IntegratedServer]: Generating keypair
+[02:49:26] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
+[02:49:28] [Server thread/INFO] [co.ex.ex.ExampleMod/]: HELLO from server starting
+[02:49:30] [Server thread/INFO] [co.ex.ex.ExampleMod/]: Gave Dev a welcome package
+[02:49:30] [Render thread/INFO] [minecraft/NewChatGui]: [CHAT] ExampleMod says hi! Enjoy these starter diamonds.
+[02:49:48] [Server thread/INFO] [minecraft/MinecraftServer]: Dev has made the advancement [The End?]
+[02:49:49] [Server thread/INFO] [minecraft/DragonFightManager]: Found that the dragon has not yet been killed in this world.
+[02:51:12] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Modified entity data of Ender Dragon]
+...snip...
+
+[03:17:37] [Server thread/INFO] [ExampleMod/EnderDragonMixin/]: EnderDragonEntity mixin override in effect: isPushedByWater -> false
+[03:17:37] [Server thread/INFO] [ExampleMod/EnderDragonMixin/]: EnderDragonEntity mixin is active (livingTick reached).
+[03:17:37] [Render thread/INFO] [ExampleMod/EnderDragonMixin/]: EnderDragonEntity mixin override in effect: isPushedByWater -> false
+[03:17:37] [Render thread/INFO] [ExampleMod/EnderDragonMixin/]: EnderDragonEntity mixin is active (livingTick reached).
+
