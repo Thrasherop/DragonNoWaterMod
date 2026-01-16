@@ -20,13 +20,13 @@ public abstract class EnderDragonEntityMixin {
     @Unique
     private boolean examplemod$loggedWaterOverride;
 
-    // public boolean isPushedByWater() {
-    //     if (!examplemod$loggedWaterOverride) {
-    //         MIXIN_LOGGER.info("EnderDragonEntity mixin override in effect: isPushedByWater -> false");
-    //         examplemod$loggedWaterOverride = true;
-    //     }
-    //     return false;
-    // }
+    public boolean isPushedByWater() {
+        if (!examplemod$loggedWaterOverride) {
+            MIXIN_LOGGER.info("EnderDragonEntity mixin override in effect: isPushedByWater -> false");
+            examplemod$loggedWaterOverride = true;
+        }
+        return false;
+    }
 
     @Inject(method = "livingTick()V", at = @At("RETURN"))
     private void examplemod$logInitialTick(CallbackInfo ci) {
