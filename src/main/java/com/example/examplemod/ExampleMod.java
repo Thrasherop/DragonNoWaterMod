@@ -6,10 +6,15 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -27,6 +32,8 @@ import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 
+import javax.annotation.Nullable;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -49,6 +56,7 @@ public class ExampleMod
     }
 
     private final AtomicBoolean worldGreetingSent = new AtomicBoolean(false);
+    private static volatile DragonTargetSnapshot lastDragonTarget;
 
     public ExampleMod() {
         // Register the setup method for modloading
@@ -109,6 +117,7 @@ public class ExampleMod
                             "Ender dragon location logging disabled."), true);
                     return Command.SINGLE_SUCCESS;
                 }))
+                .then(Commands.literal("target").executes(context -> sendDragonTarget(context.getSource())))
                 .then(Commands.literal("get").executes(context -> sendLogFilePath(context.getSource())))
                 .then(Commands.literal("status").executes(context -> reportLoggerStatus(context.getSource())))
                 .executes(context -> reportLoggerStatus(context.getSource())));
@@ -125,6 +134,49 @@ public class ExampleMod
         String path = DRAGON_LOGGER.getLogFile().toAbsolutePath().toString();
         source.sendFeedback(new StringTextComponent("Dragon log file -> " + path), true);
         return Command.SINGLE_SUCCESS;
+    }
+
+    private static int sendDragonTarget(CommandSource source) {
+        DragonTargetSnapshot snapshot = lastDragonTarget;
+        if (snapshot == null) {
+            source.sendFeedback(new StringTextComponent("No dragon target data recorded yet."), false);
+            return 0;
+        }
+
+        if (snapshot.target == null) {
+            source.sendFeedback(new StringTextComponent(
+                    "Dragon target is currently undefined (phase does not expose one). Tick " + snapshot.tick), false);
+            return 0;
+        }
+
+        String message = String.format(Locale.ROOT,
+                "Dragon target [%s @ tick %d] -> (%.2f, %.2f, %.2f)",
+                snapshot.dimensionKey, snapshot.tick, snapshot.target.x, snapshot.target.y, snapshot.target.z);
+        source.sendFeedback(new StringTextComponent(message), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    public static void updateDragonTarget(EnderDragonEntity dragon, @Nullable Vector3d target) {
+        if (dragon == null || dragon.world.isRemote()) {
+            return;
+        }
+        RegistryKey<World> dimensionKey = dragon.world.func_234923_W_();
+        ResourceLocation dimensionName = dimensionKey.func_240901_a_();
+        lastDragonTarget = new DragonTargetSnapshot(dragon.world.getGameTime(),
+                dimensionName.toString(), target);
+    }
+
+    private static class DragonTargetSnapshot {
+        private final long tick;
+        private final String dimensionKey;
+        @Nullable
+        private final Vector3d target;
+
+        private DragonTargetSnapshot(long tick, String dimensionKey, @Nullable Vector3d target) {
+            this.tick = tick;
+            this.dimensionKey = dimensionKey;
+            this.target = target;
+        }
     }
 
     @SubscribeEvent
